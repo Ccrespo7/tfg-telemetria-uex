@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    container_name: tfg_mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    restart: always
+
+  base-datos:
+    image: influxdb:latest
+    container_name: tfg_influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin12345
+      - DOCKER_INFLUXDB_INIT_ORG=uex_motorsport
+      - DOCKER_INFLUXDB_INIT_BUCKET=telemetria
+      # Token estático. Sin esto, Telegraf y el script Python
+      # tienen que hacer auth dinámica que puede fallar silenciosamente.
+      # Cámbialo por algo más seguro antes de desplegar en producción/nube.
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=uex-motorsport-token
+    volumes:
+      - influxdb-storage:/var/lib/influxdb2
+    restart: always
+
+  dashboard:
+    image: grafana/grafana:latest
+    container_name: tfg_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=100ms
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - base-datos
+    restart: always
+
+  telegraf:
+    image: telegraf:latest
+    container_name: tfg_telegraf
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    depends_on:
+      - mqtt-broker
+      - base-datos
+    restart: always
+
+  predictor_ia:
+    build:
+      context: .
+      dockerfile: Dockerfile.predictor
+    container_name: tfg_predictor_ia
+    environment:
+      - MQTT_BROKER=tfg_mosquitto
+    volumes:
+      - ./modelos:/app/modelos:ro
+      - ./datos:/app/datos
+    depends_on:
+      - mqtt-broker
+    restart: always
+
+volumes:
+  grafana-storage:
+  influxdb-storage:

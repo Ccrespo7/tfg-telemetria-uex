@@ -1,0 +1,37 @@
+# Entornos virtuales de Python
+venv/
+env/
+.env
+
+# Archivos de caché y compilados
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Claves privadas y credenciales
+*.pem
+TFG-VM_key.pem
+
+# Copias de seguridad y archivos temporales
+bckp/
+tmp_test.txt
+*.zip
+docker-compose.zip
+
+# Documentación de trabajo interno y exportaciones
+docs/
+grafana/
+dashboard_telemetria_uex.html
+
+# Scripts de pruebas y simulación
+scripts/convertir_csv_excel.py
+scripts/replay_csv.py
+scripts/simulador_skoda.py
+
+# Archivos de datos masivos locales
+datos/
+*.csv
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
