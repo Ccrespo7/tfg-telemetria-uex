@@ -1,4 +1,4 @@
-# Sistema de Telemetría en Tiempo Real OBD-II con Inteligencia Artificial
+# Monitorización Inteligente de Vehículos mediante Ingeniería de Datos
 
 ![Python](https://img.shields.io/badge/python-3.11-blue.svg)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
